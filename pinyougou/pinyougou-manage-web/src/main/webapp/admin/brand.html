@@ -12,10 +12,12 @@
 	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
     <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="../plugins/angularjs/angular.min.js"></script>
+    <script src="../plugins/angularjs/pagination.js"></script>
+    <link rel="stylesheet" href="../plugins/angularjs/pagination.css">
 
     <script type="text/javascript">
         //定义模块
-        var app = angular.module("pinyougou", []);
+        var app = angular.module("pinyougou", ["pagination"]);
 
         //定义处理器
         app.controller("brandController", function ($scope, $http) {
@@ -30,11 +32,39 @@
                 });
 
             };
+
+            // 初始化分页参数
+            $scope.paginationConf = {
+                currentPage:1,// 当前页号
+                totalItems:10,// 总记录数
+                itemsPerPage:10,// 页大小
+                perPageOptions:[10, 20, 30, 40, 50],// 可选择的每页大小
+                onChange: function () {// 当上述的参数发生变化了后触发
+                    $scope.reloadList();
+                }
+            };
+
+            $scope.reloadList = function () {
+                $scope.findPage($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
+
+            };
+
+            //根据分页信息查询数据
+            $scope.findPage = function (pageNo, rows) {
+                $http.get("../brand/findPage.do?pageNo=" + pageNo + "&rows=" + rows).success(function (response) {
+                    //response是分页对象（列表，总记录数）
+                    $scope.list = response.rows;
+                    //给分页组件重新设置最新的总记录数
+                    $scope.paginationConf.totalItems = response.total;
+                });
+
+            };
         });
     </script>
 
+
 </head>
-<body ng-app="pinyougou" ng-controller="brandController" ng-init="findAll()" class="hold-transition skin-red sidebar-mini">
+<body ng-app="pinyougou" ng-controller="brandController"  class="hold-transition skin-red sidebar-mini">
   <!-- .box-body -->
                     <div class="box-header with-border">
                         <h3 class="box-title">品牌管理</h3>
@@ -93,7 +123,9 @@
 							 
                         </div>
                         <!-- 数据表格 /-->
-                        
+
+                        <!--分页导航条-->
+                        <tm-pagination conf="paginationConf"/>
                         
                         
                         
