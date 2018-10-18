@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angularJS测试</title>
+    <script src="js/angular.min.js"></script>
+</head>
+ng-init可以在进入页面的时候进行初始化执行，里面可以是具体的js语句或者js方法<br>
+<body ng-app ng-init="name='itcast'">
+请输入你的名称：<input ng-model="name"><br>
+
+你刚刚输入的内容为：{{name}}
+</body>
+</html>

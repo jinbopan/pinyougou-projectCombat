@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angularJS测试</title>
+    <script src="js/angular.min.js"></script>
+    <script>
+
+        //定义模块；参数1：模块的名称，参数2：要加载的其它模块；如果没有则也不可以少这个空数组
+        //如果要加载其它模块则在数组中写其它模块的名称
+        var app = angular.module("app", []);
+
+        //定义处理器（动作）,参数1：处理器名称，处理器方法体
+        app.controller("myController", function ($scope) {
+            //$scope是angular的上下文；也就是可以获取到ng-model或者在$scope设置过的方法或者变量都可以在
+            //angularJS的指令中或者{{}}直接使用
+
+            $scope.add = function () {
+                $scope.z= parseInt($scope.x) + parseInt($scope.y);
+            };
+        });
+    </script>
+</head>
+<body ng-app="app" ng-controller="myController">
+x：<input ng-model="x"><br>
+y：<input ng-model="y"><br>
+<input type="button" value="点击进行计算" ng-click="add()"><br>
+
+x+y={{z}}
+</body>
+</html>

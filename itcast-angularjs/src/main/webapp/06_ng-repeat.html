@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angularJS测试</title>
+    <script src="js/angular.min.js"></script>
+    <script>
+
+        //定义模块；参数1：模块的名称，参数2：要加载的其它模块；如果没有则也不可以少这个空数组
+        //如果要加载其它模块则在数组中写其它模块的名称
+        var app = angular.module("app", []);
+
+        //定义处理器（动作）,参数1：处理器名称，处理器方法体
+        app.controller("myController", function ($scope) {
+
+            //定义数值数组
+            $scope.list = [1,2,3,4,5];
+
+            //定义自定义对象集合
+            $scope.persons = [
+                {"id":121,"name":"传智播客1", "gender":"男"},
+                {"id":122,"name":"传智播客2", "gender":"女"},
+                {"id":123,"name":"传智播客3", "gender":"男"}
+            ];
+
+        });
+    </script>
+</head>
+<body ng-app="app" ng-controller="myController">
+数值为：<br>
+<div ng-repeat="num in list">
+    {{num}}<br>
+</div><br>
+
+<table>
+    <thead>
+    <tr>
+        <td>id</td>
+        <td>名称</td>
+        <td>性别</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="p in persons">
+        <td>{{p.id}}</td>
+        <td>{{p.name}}</td>
+        <td>{{p.gender}}</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
