@@ -115,4 +115,18 @@ public class BrandController {
                                @RequestParam(value="rows", defaultValue = "10")Integer rows){
         return brandService.findPage(pageNo, rows);
     }
+
+    /**
+     * 根据分页条件查询
+     * @param pageNo 页号
+     * @param rows 页大小
+     * @return 分页对象
+     */
+    @PostMapping("/search")
+    public PageResult search(@RequestBody TbBrand brand,
+                             @RequestParam(value="pageNo", defaultValue = "1")Integer pageNo,
+                             @RequestParam(value="rows", defaultValue = "10")Integer rows){
+        return brandService.search(brand, pageNo, rows);
+    }
+
 }
