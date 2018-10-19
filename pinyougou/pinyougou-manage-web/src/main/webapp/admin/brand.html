@@ -59,6 +59,20 @@
                 });
 
             };
+
+            //保存
+            $scope.save = function () {
+                $http.post("../brand/add.do", $scope.entity).success(function (response) {
+                    if(response.success){
+                        //如果操作成功；则刷新列表
+                        $scope.reloadList();
+                    } else {
+                        alert(response.message);
+                    }
+
+                });
+
+            };
         });
     </script>
 
@@ -139,21 +153,22 @@
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="myModalLabel">品牌编辑</h3>
+            {{entity}}
 		</div>
 		<div class="modal-body">		
 			<table class="table table-bordered table-striped"  width="800px">
 		      	<tr>
 		      		<td>品牌名称</td>
-		      		<td><input  class="form-control" placeholder="品牌名称" >  </td>
+		      		<td><input ng-model="entity.name" class="form-control" placeholder="品牌名称" >  </td>
 		      	</tr>		      	
 		      	<tr>
 		      		<td>首字母</td>
-		      		<td><input  class="form-control" placeholder="首字母">  </td>
+		      		<td><input ng-model="entity.firstChar" class="form-control" placeholder="首字母">  </td>
 		      	</tr>		      	
 			 </table>				
 		</div>
 		<div class="modal-footer">						
-			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true">保存</button>
+			<button class="btn btn-success" data-dismiss="modal" ng-click="save()" aria-hidden="true">保存</button>
 			<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
 		</div>
 	  </div>
