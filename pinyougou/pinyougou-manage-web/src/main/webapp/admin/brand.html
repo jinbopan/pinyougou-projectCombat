@@ -19,12 +19,53 @@
         //定义模块
         var app = angular.module("pinyougou", ["pagination"]);
 
+        //定义业务对象
+        app.service("brandService", function ($http) {
+            //this表示brandService
+
+            this.findAll = function () {
+                //发送请求到后台获取数据
+                return $http.get("../brand/findAll.do");
+            };
+
+            //根据分页信息查询数据
+            this.findPage = function (pageNo, rows) {
+                return $http.get("../brand/findPage.do?pageNo=" + pageNo + "&rows=" + rows);
+            };
+
+            this.add = function(entity){
+                return $http.post("../brand/add.do", entity);
+            };
+
+            this.update = function(entity){
+                return $http.post("../brand/update.do", entity);
+            };
+
+            //根据id查询
+            this.findOne = function (id) {
+                //根据id到后台查询数据
+                return $http.get("../brand/findOne.do?id=" + id);
+            };
+
+            //删除
+            this.delete = function (selectedIds) {
+               return $http.get("../brand/delete.do?ids=" + selectedIds);
+
+            };
+
+            //条件分页查询
+            this.search = function (pageNo, rows, searchEntity) {
+                return $http.post("../brand/search.do?pageNo=" + pageNo +"&rows=" + rows, searchEntity);
+
+            };
+        });
+
         //定义处理器
-        app.controller("brandController", function ($scope, $http) {
+        app.controller("brandController", function ($scope, $http, brandService) {
 
             $scope.findAll = function () {
                 //发送请求到后台获取数据
-                $http.get("../brand/findAll.do").success(function (response) {
+                brandService.findAll().success(function (response) {
                     //将返回结果设置到一个上下文变量中
                     $scope.list = response;
                 }).error(function () {
@@ -52,7 +93,7 @@
 
             //根据分页信息查询数据
             $scope.findPage = function (pageNo, rows) {
-                $http.get("../brand/findPage.do?pageNo=" + pageNo + "&rows=" + rows).success(function (response) {
+                brandService.findPage(pageNo, rows).success(function (response) {
                     //response是分页对象（列表，总记录数）
                     $scope.list = response.rows;
                     //给分页组件重新设置最新的总记录数
@@ -63,13 +104,15 @@
 
             //保存
             $scope.save = function () {
-                var method = "add";
+                var obj;
                 if($scope.entity.id != null){
                     //修改
-                    method = "update";
+                    obj = brandService.update($scope.entity);
+                } else {
+                    obj = brandService.add($scope.entity);
                 }
 
-                $http.post("../brand/"+method+".do", $scope.entity).success(function (response) {
+                obj.success(function (response) {
                     if(response.success){
                         //如果操作成功；则刷新列表
                         $scope.reloadList();
@@ -84,7 +127,7 @@
             //根据id查询
             $scope.findOne = function (id) {
                 //根据id到后台查询数据
-                $http.get("../brand/findOne.do?id=" + id).success(function (response) {
+                brandService.findOne(id).success(function (response) {
                     $scope.entity = response;
                 });
             };
@@ -115,7 +158,7 @@
                 }
                 //confirm会弹出确认窗口；如果点击 确定则返回true,否则false
                 if(confirm("你确定要删除选中了的那些记录吗？")){
-                    $http.get("../brand/delete.do?ids=" + $scope.selectedIds).success(function (response) {
+                    brandService.delete($scope.selectedIds).success(function (response) {
                         if(response.success){
                             //刷新列表
                             $scope.reloadList();
@@ -135,7 +178,7 @@
 
             //条件分页查询
             $scope.search = function (pageNo, rows) {
-                $http.post("../brand/search.do?pageNo=" + pageNo +"&rows=" + rows, $scope.searchEntity).success(function (response) {
+                brandService.search(pageNo, rows, $scope.searchEntity).success(function (response) {
                     $scope.list = response.rows;
 
                     //更新分页组件的总记录数
@@ -166,7 +209,6 @@
                                         <button type="button" class="btn btn-default" title="新建" ng-click="entity={}" data-toggle="modal" data-target="#editModal" ><i class="fa fa-file-o"></i> 新建</button>
                                         <button type="button" ng-click="delete()" class="btn btn-default" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>
                                         <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
-                                        {{searchEntity}}
                                     </div>
                                 </div>
                             </div>
