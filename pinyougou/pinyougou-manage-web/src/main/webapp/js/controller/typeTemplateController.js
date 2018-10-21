@@ -84,6 +84,7 @@ app.controller("typeTemplateController", function ($scope, $controller, typeTemp
     $scope.specificationList = {data:[]};//初始化
     $scope.findSpecificationList = function(){
         specificationService.selectOptionList().success(function (response) {
+            //返回的数据结构如：[{"id":27,"text":"网络"},{"id":32,"text":"机身内存"}]
             $scope.specificationList.data = response;
         });
     };
