@@ -72,10 +72,15 @@ public class SpecificationController {
         return Result.fail("修改失败");
     }
 
+    /**
+     * 删除规格及其对应的所有选项
+     * @param ids 规格id集合
+     * @return 操作结果
+     */
     @GetMapping("/delete")
     public Result delete(Long[] ids) {
         try {
-            specificationService.deleteByIds(ids);
+            specificationService.deleteSpecificationByIds(ids);
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();

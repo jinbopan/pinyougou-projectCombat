@@ -28,4 +28,10 @@ public interface SpecificationService extends BaseService<TbSpecification> {
      * @param specification 规格及其选项
      */
     void update(Specification specification);
+
+    /**
+     * 删除规格及其对应的所有选项
+     * @param ids 规格id集合
+     */
+    void deleteSpecificationByIds(Long[] ids);
 }
