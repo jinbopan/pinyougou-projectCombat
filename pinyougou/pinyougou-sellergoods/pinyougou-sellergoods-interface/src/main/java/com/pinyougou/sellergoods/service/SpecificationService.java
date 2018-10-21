@@ -15,4 +15,17 @@ public interface SpecificationService extends BaseService<TbSpecification> {
      *                  {"specificationOptionList":[{"optionName":"蓝色","orders":"1"}],"specification":{"specName":"颜色"}}
      */
     void add(Specification specification);
+
+    /**
+     * 根据规格id到数据库中查询规格及其选项
+     * @param id 规格id
+     * @return 规格及其选项
+     */
+    Specification findOne(Long id);
+
+    /**
+     * 规格、选项集合更新到数据库中
+     * @param specification 规格及其选项
+     */
+    void update(Specification specification);
 }

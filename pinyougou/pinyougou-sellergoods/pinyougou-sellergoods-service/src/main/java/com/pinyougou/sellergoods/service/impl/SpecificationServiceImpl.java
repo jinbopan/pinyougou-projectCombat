@@ -57,4 +57,51 @@ public class SpecificationServiceImpl extends BaseServiceImpl<TbSpecification> i
             }
         }
     }
+
+    @Override
+    public Specification findOne(Long id) {
+        Specification specification = new Specification();
+
+        //1、根据规格id查询规格
+        TbSpecification tbSpecification = specificationMapper.selectByPrimaryKey(id);
+        specification.setSpecification(tbSpecification);
+
+        //2、根据规格id查询该规格对应的所有选项
+        /**
+         *数据库执行语句如：
+         *  select * from tb_specification_option where spec_id = ?
+         */
+
+        TbSpecificationOption param = new TbSpecificationOption();
+        param.setSpecId(id);
+
+        List<TbSpecificationOption> specificationOptionList = specificationOptionMapper.select(param);
+
+        //设置规格选项集合
+        specification.setSpecificationOptionList(specificationOptionList);
+
+        return specification;
+    }
+
+    @Override
+    public void update(Specification specification) {
+        //1、更新规格
+        specificationMapper.updateByPrimaryKeySelective(specification.getSpecification());
+
+        //2、删除该规格对应的所有选项，根据规格id查询所有对应的选项delete from tb_specification_option where spec_id=?
+        TbSpecificationOption param = new TbSpecificationOption();
+        param.setSpecId(specification.getSpecification().getId());
+
+        specificationOptionMapper.delete(param);
+
+        //3、新增该规格最新的规格选项集合
+        if (specification.getSpecificationOptionList() != null && specification.getSpecificationOptionList().size() > 0) {
+            for (TbSpecificationOption specificationOption : specification.getSpecificationOptionList()) {
+                //设置规格id
+                specificationOption.setSpecId(specification.getSpecification().getId());
+                //保存规格选项
+                specificationOptionMapper.insertSelective(specificationOption);
+            }
+        }
+    }
 }
