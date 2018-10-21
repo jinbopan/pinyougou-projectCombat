@@ -67,6 +67,7 @@ app.controller("specificationController", function ($scope, $controller, specifi
 
     //新增规格选项
     $scope.addTableRow = function () {
+        //往规格选项集合中添加一个空对象
         $scope.entity.specificationOptionList.push({});
     };
 

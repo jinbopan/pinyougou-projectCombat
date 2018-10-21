@@ -2,9 +2,11 @@ package com.pinyougou.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbSpecification;
+import com.pinyougou.pojo.TbSpecificationOption;
 import com.pinyougou.sellergoods.service.SpecificationService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import com.pinyougou.vo.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +29,14 @@ public class SpecificationController {
         return specificationService.findPage(page, rows);
     }
 
+    /**
+     * 保存规格及其选项列表到数据库中
+     * @param specification 规格信息（规格及选项列表）；如：
+     *                  {"specificationOptionList":[{"optionName":"蓝色","orders":"1"}],"specification":{"specName":"颜色"}}
+     * @return 操作结果
+     */
     @PostMapping("/add")
-    public Result add(@RequestBody TbSpecification specification) {
+    public Result add(@RequestBody Specification specification) {
         try {
             specificationService.add(specification);
             return Result.ok("增加成功");
