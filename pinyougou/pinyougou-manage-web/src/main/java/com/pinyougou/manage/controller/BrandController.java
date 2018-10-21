@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/brand")
 //@Controller
@@ -127,6 +128,15 @@ public class BrandController {
                              @RequestParam(value="pageNo", defaultValue = "1")Integer pageNo,
                              @RequestParam(value="rows", defaultValue = "10")Integer rows){
         return brandService.search(brand, pageNo, rows);
+    }
+
+    /**
+     * 查询数据库中的所有品牌列表；结构：[{id:'1',text:'联想'},{id:'2',text:'华为'}]
+     * @return 品牌列表
+     */
+    @GetMapping("/selectOptionList")
+    public List<Map<String, String>> selectOptionList(){
+        return brandService.selectOptionList();
     }
 
 }

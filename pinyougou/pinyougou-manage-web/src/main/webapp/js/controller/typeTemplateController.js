@@ -75,6 +75,7 @@ app.controller("typeTemplateController", function ($scope, $controller, typeTemp
     $scope.brandList = {data:[]};//初始化
     $scope.findBrandList = function(){
         brandService.selectOptionList().success(function (response) {
+            //返回的数据结构如：[{id:'1',text:'联想'},{id:'2',text:'华为'}]
             $scope.brandList.data = response;
         });
     };

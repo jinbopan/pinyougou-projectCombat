@@ -37,4 +37,10 @@ app.service("brandService", function ($http) {
         return $http.post("../brand/search.do?pageNo=" + pageNo +"&rows=" + rows, searchEntity);
 
     };
+
+    //查询品牌列表，返回格式：[{id:'1',text:'联想'},{id:'2',text:'华为'}]
+    this.selectOptionList = function () {
+        return $http.get("../brand/selectOptionList.do");
+
+    };
 });
