@@ -15,7 +15,7 @@
 
     <!--需要认证后有角色的用户才可访问的-->
     <http use-expressions="false">
-        <!--需要有ROLE_USER角色才能访问-->
+        <!--拥有ROLE_USER角色可以访问所有资源-->
         <intercept-url pattern="/**" access="ROLE_USER"/>
 
         <!--登录配置-->
@@ -30,6 +30,10 @@
         <headers>
             <frame-options policy="SAMEORIGIN"/>
         </headers>
+
+        <!--退出-->
+        <logout/>
+
     </http>
 
     <!--配置认证管理器-->
