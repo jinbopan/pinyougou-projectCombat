@@ -51,9 +51,12 @@
         <beans:property name="sellerService" ref="sellerService"/>
     </beans:bean>
 
+    <beans:bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
     <!--配置认证管理器-->
     <authentication-manager>
         <authentication-provider user-service-ref="userDetailService">
+            <password-encoder ref="bCryptPasswordEncoder"/>
         </authentication-provider>
     </authentication-manager>
 
