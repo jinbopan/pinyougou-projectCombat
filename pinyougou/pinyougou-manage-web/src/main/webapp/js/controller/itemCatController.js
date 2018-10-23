@@ -82,7 +82,9 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
                 $scope.entity_2 = null;
                 break;
             case 2:
+                //二级分类
                 $scope.entity_1 = entity;
+                //三级分类
                 $scope.entity_2 = null;
                 break;
             default:
