@@ -3,6 +3,7 @@ package com.pinyougou.shop.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.sellergoods.service.GoodsService;
+import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
 import org.springframework.web.bind.annotation.*;
@@ -27,15 +28,20 @@ public class GoodsController {
         return goodsService.findPage(page, rows);
     }
 
+    /**
+     * 接收商品基本、描述、sku列表并保存商品基本、描述信息sku列表
+     * @param goods 商品vo{TbGoods,TbGoodsDesc,List<TbItem>}
+     * @return 操作结果
+     */
     @PostMapping("/add")
-    public Result add(@RequestBody TbGoods goods) {
+    public Result add(@RequestBody Goods goods) {
         try {
-            goodsService.add(goods);
-            return Result.ok("增加成功");
+            goodsService.addGoods(goods);
+            return Result.ok("增加商品成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("增加失败");
+        return Result.fail("增加商品失败");
     }
 
     @GetMapping("/findOne")
