@@ -33,6 +33,8 @@ app.controller("goodsController", function ($scope, $controller, $location, good
             if(response.success){
                 alert(response.message);
                 //location.href = "goods.html";
+                //重置富文本编辑器内容
+                editor.html("");
             } else {
                 alert(response.message);
             }
