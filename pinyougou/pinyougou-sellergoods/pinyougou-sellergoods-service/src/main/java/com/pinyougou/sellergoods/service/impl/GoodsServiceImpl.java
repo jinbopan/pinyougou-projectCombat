@@ -68,48 +68,85 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         goodsDescMapper.insertSelective(goods.getGoodsDesc());
 
         //3、保存商品sku列表
-        if (goods.getItemList() != null && goods.getItemList().size() > 0) {
-            for (TbItem item : goods.getItemList()) {
+        saveItemList(goods);
+    }
 
-                //sku标题 = spu标题+该商品的所有规格选项的值
-                String title = goods.getGoods().getGoodsName();
+    /**
+     * 保存商品sku列表
+     * @param goods 商品信息（基本、描述、sku列表）
+     */
+    private void saveItemList(Goods goods) {
+        if("1".equals(goods.getGoods().getIsEnableSpec())) {
+            //启用规格，则需要处理前端传递过滤的sku
+            if (goods.getItemList() != null && goods.getItemList().size() > 0) {
+                for (TbItem item : goods.getItemList()) {
 
-                //获取前端传递的规格及其选项
-                Map<String, String> map = JSON.parseObject(item.getSpec(), Map.class);
-                Set<Map.Entry<String, String>> entries = map.entrySet();
-                for (Map.Entry<String, String> entry : entries) {
-                    title += " " + entry.getValue();
+                    //sku标题 = spu标题+该商品的所有规格选项的值
+                    String title = goods.getGoods().getGoodsName();
+
+                    //获取前端传递的规格及其选项
+                    Map<String, String> map = JSON.parseObject(item.getSpec(), Map.class);
+                    Set<Map.Entry<String, String>> entries = map.entrySet();
+                    for (Map.Entry<String, String> entry : entries) {
+                        title += " " + entry.getValue();
+                    }
+
+                    item.setTitle(title);
+
+                    setItemValue(item, goods);
+
+                    //保存sku
+                    itemMapper.insertSelective(item);
                 }
-
-                item.setTitle(title);
-
-                //根据品牌id查询品牌
-                TbBrand brand = brandMapper.selectByPrimaryKey(goods.getGoods().getBrandId());
-                item.setBrand(brand.getName());
-
-                //从spu中获取第一个图片
-                if(!StringUtils.isEmpty(goods.getGoodsDesc().getItemImages())) {
-                    List<Map> list = JSONArray.parseArray(goods.getGoodsDesc().getItemImages(), Map.class);
-                    item.setImage(list.get(0).get("url").toString());
-                }
-                item.setGoodsId(goods.getGoods().getId());
-
-                //商品分类；来自spu的第3级分类的中文名称
-                TbItemCat itemCat = itemCatMapper.selectByPrimaryKey(goods.getGoods().getCategory3Id());
-                item.setCategoryid(itemCat.getId());
-                item.setCategory(itemCat.getName());
-
-                item.setCreateTime(new Date());
-                item.setUpdateTime(item.getCreateTime());
-
-                //商家id
-                TbSeller seller = sellerMapper.selectByPrimaryKey(goods.getGoods().getSellerId());
-                item.setSellerId(seller.getSellerId());
-                item.setSeller(seller.getName());
-
-                //保存sku
-                itemMapper.insertSelective(item);
             }
+        } else {
+            //不启用规格；可以根据spu基本信息生成一条sku商品数据
+            TbItem tbItem = new TbItem();
+
+            tbItem.setTitle(goods.getGoods().getGoodsName());
+            tbItem.setPrice(goods.getGoods().getPrice());
+            //默认库存
+            tbItem.setNum(9999);
+            //默认不启用
+            tbItem.setStatus("0");
+            //因为只有一个sku所以默认
+            tbItem.setIsDefault("1");
+
+            setItemValue(tbItem, goods);
+
+            itemMapper.insertSelective(tbItem);
+
         }
+    }
+
+    /**
+     * 根据商品信息设置sku
+     * @param item sku商品
+     * @param goods spu商品信息
+     */
+    private void setItemValue(TbItem item, Goods goods) {
+        //根据品牌id查询品牌
+        TbBrand brand = brandMapper.selectByPrimaryKey(goods.getGoods().getBrandId());
+        item.setBrand(brand.getName());
+
+        //从spu中获取第一个图片
+        if (!StringUtils.isEmpty(goods.getGoodsDesc().getItemImages())) {
+            List<Map> list = JSONArray.parseArray(goods.getGoodsDesc().getItemImages(), Map.class);
+            item.setImage(list.get(0).get("url").toString());
+        }
+        item.setGoodsId(goods.getGoods().getId());
+
+        //商品分类；来自spu的第3级分类的中文名称
+        TbItemCat itemCat = itemCatMapper.selectByPrimaryKey(goods.getGoods().getCategory3Id());
+        item.setCategoryid(itemCat.getId());
+        item.setCategory(itemCat.getName());
+
+        item.setCreateTime(new Date());
+        item.setUpdateTime(item.getCreateTime());
+
+        //商家id
+        TbSeller seller = sellerMapper.selectByPrimaryKey(goods.getGoods().getSellerId());
+        item.setSellerId(seller.getSellerId());
+        item.setSeller(seller.getName());
     }
 }
