@@ -203,18 +203,20 @@ app.controller("goodsController", function ($scope, $controller, $location, good
                     $scope.entity.goodsDesc.specificationItems.splice(specIndex, 1);
                 }
             }
-        } else {
+        } else {//规格没有存在；则新增一个规格到specificationItems
             $scope.entity.goodsDesc.specificationItems.push({"attributeName":specName,"attributeValue":[optionName]});
         }
     };
 
     //每次点击了规格选项后生成最新的SKU列表
     $scope.createItemList = function () {
-        //初始化
+        //初始化；没有任何的规格选项，价格为0，库存量为9999，状态：未审核，是否默认：不是默认
         $scope.entity.itemList = [{spec:{},price:0, num:9999, status:"0",isDefault:"0"}];
 
+        //遍历当前以及选择了的规格及其选项
         for (var i = 0; i < $scope.entity.goodsDesc.specificationItems.length; i++) {
             var spec = $scope.entity.goodsDesc.specificationItems[i];
+            //对每个规格的选项进行生成一条条的记录
             $scope.entity.itemList = addColumn($scope.entity.itemList, spec.attributeName, spec.attributeValue);
         }
     };
@@ -227,6 +229,7 @@ app.controller("goodsController", function ($scope, $controller, $location, good
             var oldItem = itemList[i];
             for (var j = 0; j < specOptions.length; j++) {
                 var option = specOptions[j];
+                //深度克隆，先转换为字符串,再将字符串转换为json
                 var newItem = JSON.parse(JSON.stringify(oldItem));
                 newItem.spec[specName] = option;
 

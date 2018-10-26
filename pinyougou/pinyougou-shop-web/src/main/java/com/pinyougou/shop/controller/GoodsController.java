@@ -6,6 +6,7 @@ import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,9 @@ public class GoodsController {
     @PostMapping("/add")
     public Result add(@RequestBody Goods goods) {
         try {
+            //获取当前登录用户即商家
+            String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+            goods.getGoods().setSellerId(sellerId);
             goodsService.addGoods(goods);
             return Result.ok("增加商品成功");
         } catch (Exception e) {
