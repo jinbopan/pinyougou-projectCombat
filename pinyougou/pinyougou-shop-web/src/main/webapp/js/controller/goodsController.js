@@ -126,13 +126,15 @@ app.controller("goodsController", function ($scope, $controller, $location, good
 
     //读取一级商品分类列表
     $scope.selectItemCat1List = function () {
+        //查询父分类id为0的那些子分类
         itemCatService.findByParentId(0).success(function (response) {
             $scope.itemCat1List = response;
         });
     };
 
     //读取二级商品分类列表
-    $scope.$watch("entity.goods.category1Id", function (newValue, oldValue) {
+    //可以监听上下文变量中的值的改变；参数1：要监听的变量，参数2：当发生了改变之后要执行的方法
+    $scope.$watch("entity.goods.category1Id", function (newValue, oldValue) {//改变后的值，改变之前的值
         if (newValue != undefined) {
             itemCatService.findByParentId(newValue).success(function (response) {
                 $scope.itemCat2List = response;
@@ -152,6 +154,7 @@ app.controller("goodsController", function ($scope, $controller, $location, good
     //当选择三级分类后，查询对应的分类模板id
     $scope.$watch("entity.goods.category3Id", function (newValue, oldValue) {
         if (newValue != undefined) {
+            //根据分类id查询该商品分类
             itemCatService.findOne(newValue).success(function (response) {
                 $scope.entity.goods.typeTemplateId = response.typeId;
             });
