@@ -47,9 +47,16 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         Example example = new Example(TbGoods.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(goods.get***())){
-            criteria.andLike("***", "%" + goods.get***() + "%");
-        }*/
+        if(!StringUtils.isEmpty(goods.getAuditStatus())){
+            criteria.andEqualTo("auditStatus", goods.getAuditStatus());
+        }
+        //根据商家id查询
+        if(!StringUtils.isEmpty(goods.getSellerId())){
+            criteria.andEqualTo("sellerId", goods.getSellerId());
+        }
+        if(!StringUtils.isEmpty(goods.getGoodsName())){
+            criteria.andLike("goodsName", "%" + goods.getGoodsName() + "%");
+        }
 
         List<TbGoods> list = goodsMapper.selectByExample(example);
         PageInfo<TbGoods> pageInfo = new PageInfo<>(list);
@@ -60,6 +67,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     @Override
     public void addGoods(Goods goods) {
         //1、保存商品spu基本信息
+        //默认未审核
+        goods.getGoods().setAuditStatus("0");
         add(goods.getGoods());
 
         //2、保存商品spu描述信息
@@ -111,6 +120,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             tbItem.setStatus("0");
             //因为只有一个sku所以默认
             tbItem.setIsDefault("1");
+            //设置默认的规格为空
+            tbItem.setSpec("{}");
 
             setItemValue(tbItem, goods);
 
