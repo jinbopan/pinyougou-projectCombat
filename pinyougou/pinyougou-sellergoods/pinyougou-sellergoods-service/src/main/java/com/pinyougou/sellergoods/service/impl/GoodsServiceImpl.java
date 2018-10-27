@@ -128,6 +128,19 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         //update tb_goods set audit_status=? where id in(?,?)
         goodsMapper.updateByExampleSelective(goods, example);
+
+        //如果是审核通过的话；应该将sku商品的状态改为已启动
+        if ("2".equals(status)) {
+            TbItem item = new TbItem();
+            //已启用
+            item.setStatus("1");
+
+            Example itemExample = new Example(TbItem.class);
+            itemExample.createCriteria().andIn("goodsId", Arrays.asList(ids));
+
+            //update tb_item set status=1 where goods_id in (?,?...)
+            itemMapper.updateByExampleSelective(item, itemExample);
+        }
     }
 
     /**
