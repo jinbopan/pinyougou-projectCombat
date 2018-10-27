@@ -12,11 +12,13 @@ import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 
+@Transactional
 @Service(interfaceClass = GoodsService.class)
 public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsService {
 
@@ -70,6 +72,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         //默认未审核
         goods.getGoods().setAuditStatus("0");
         add(goods.getGoods());
+
+        //int i = 1/0;
 
         //2、保存商品spu描述信息
         //商品spuid在保存完基本信息后会回填；再设置给商品描述信息的主键
