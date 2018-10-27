@@ -56,7 +56,7 @@ app.controller("goodsController", function ($scope, $controller, $location, good
             //向富文本编辑器设置商品内容
             editor.html($scope.entity.goodsDesc.introduction);
 
-            //转换商品图片列表
+            //转换商品图片列表-->将一个字符串转换为一个js对象
             $scope.entity.goodsDesc.itemImages = JSON.parse($scope.entity.goodsDesc.itemImages);
             //转换商品扩展属性
             $scope.entity.goodsDesc.customAttributeItems = JSON.parse($scope.entity.goodsDesc.customAttributeItems);

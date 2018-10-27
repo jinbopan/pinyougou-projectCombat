@@ -48,15 +48,34 @@ public class GoodsController {
         return Result.fail("增加商品失败");
     }
 
+    /**
+     * 根据商品spu id查询商品信息（基本、描述、sku列表）
+     * @param id 商品spu id
+     * @return 商品信息（基本、描述、sku列表）
+     */
     @GetMapping("/findOne")
-    public TbGoods findOne(Long id) {
-        return goodsService.findOne(id);
+    public Goods findOne(Long id) {
+        return goodsService.findGoodsById(id);
     }
 
+    /**
+     * 根据商品spu id更新商品基本、描述、sku列表
+     * @param goods 商品信息（基本、描述、sku列表）
+     * @return 操作结果
+     */
     @PostMapping("/update")
-    public Result update(@RequestBody TbGoods goods) {
+    public Result update(@RequestBody Goods goods) {
         try {
-            goodsService.update(goods);
+            TbGoods oldGoods = goodsService.findOne(goods.getGoods().getId());
+            //当前登录用户
+            String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            //判断当前修改这个商品的商家是否是以前的商家是同一个商家
+            if(sellerId.equals(goods.getGoods().getSellerId()) && sellerId.equals(oldGoods.getSellerId())) {
+                goodsService.updateGoods(goods);
+            } else {
+                return Result.fail("非法操作");
+            }
             return Result.ok("修改成功");
         } catch (Exception e) {
             e.printStackTrace();
