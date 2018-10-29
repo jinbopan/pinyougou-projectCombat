@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 @Service(interfaceClass = ContentService.class)
@@ -25,6 +27,55 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
     private RedisTemplate redisTemplate;
 
     public static final String CONTENT = "content";
+
+    @Override
+    public void add(TbContent tbContent) {
+        super.add(tbContent);
+        //更新内容分类的缓存
+        updateContentInRedisByCategoryId(tbContent.getCategoryId());
+    }
+
+    /**
+     * 将redis中分类id对应的缓存数据删除
+     * @param categoryId 分类id
+     */
+    private void updateContentInRedisByCategoryId(Long categoryId) {
+        redisTemplate.boundHashOps(CONTENT).delete(categoryId);
+    }
+
+    @Override
+    public void update(TbContent tbContent) {
+        //查询原有的内容
+        TbContent oldContent = findOne(tbContent.getCategoryId());
+
+        super.update(tbContent);
+
+        //1、根据当前最新内容对应的分类id，将redis中该分类id对应的缓存数据删除
+        updateContentInRedisByCategoryId(tbContent.getCategoryId());
+
+        //2、如果修改了内容分类的话；则需要将原来内容分类对应的缓存数据也需要删除
+        if (!oldContent.getCategoryId().equals(tbContent.getCategoryId())) {
+            updateContentInRedisByCategoryId(oldContent.getCategoryId());
+        }
+
+    }
+
+    @Override
+    public void deleteByIds(Serializable[] ids) {
+        //根据内容id集合查询这些内容对应的内容列表；再遍历每一个内容将其内容分类的缓存数据从redis中删除
+        Example example = new Example(TbContent.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids));
+
+        List<TbContent> contentList = contentMapper.selectByExample(example);
+        if (contentList != null && contentList.size() > 0) {
+            for (TbContent content : contentList) {
+                updateContentInRedisByCategoryId(content.getCategoryId());
+            }
+        }
+
+        //再删除内容
+        super.deleteByIds(ids);
+    }
 
     @Override
     public PageResult search(Integer page, Integer rows, TbContent content) {
