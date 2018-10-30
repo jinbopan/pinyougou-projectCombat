@@ -46,7 +46,7 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
     @Override
     public void update(TbContent tbContent) {
         //查询原有的内容
-        TbContent oldContent = findOne(tbContent.getCategoryId());
+        TbContent oldContent = findOne(tbContent.getId());
 
         super.update(tbContent);
 
