@@ -3,12 +3,10 @@ package com.pinyougou.search.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.HighlightOptions;
-import org.springframework.data.solr.core.query.SimpleHighlightQuery;
-import org.springframework.data.solr.core.query.SimpleQuery;
+import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.query.result.HighlightEntry;
 import org.springframework.data.solr.core.query.result.HighlightPage;
 import org.springframework.data.solr.core.query.result.ScoredPage;
@@ -16,6 +14,7 @@ import org.springframework.data.solr.core.query.result.ScoredPage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ItemSearchServiceImpl implements ItemSearchService {
@@ -45,6 +44,39 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         //高亮结束标签
         highlightOptions.setSimplePostfix("</font>");
         query.setHighlightOptions(highlightOptions);
+
+        //分类过滤条件查询
+        if(searchMap.get("category") != null && !"".equals(searchMap.get("category").toString())){
+            //创建过滤查询对象
+            Criteria catCriteria = new Criteria("item_category").is(searchMap.get("category"));
+
+            SimpleFilterQuery catFilterQuery = new SimpleFilterQuery(catCriteria);
+            query.addFilterQuery(catFilterQuery);
+        }
+
+        //品牌过滤条件查询
+        if(searchMap.get("brand") != null && !"".equals(searchMap.get("brand").toString())){
+            //创建过滤查询对象
+            Criteria brandCriteria = new Criteria("item_brand").is(searchMap.get("brand"));
+
+            SimpleFilterQuery brandFilterQuery = new SimpleFilterQuery(brandCriteria);
+            query.addFilterQuery(brandFilterQuery);
+        }
+
+        //规格过滤条件查询
+        if(searchMap.get("spec") != null){
+
+            //逐个处理每个规格
+            Map<String, String> specMap = (Map<String, String>) searchMap.get("spec");
+            Set<Map.Entry<String, String>> entries = specMap.entrySet();
+            for (Map.Entry<String, String> entry : entries) {
+                //创建过滤查询对象
+                Criteria specCriteria = new Criteria("item_spec_" + entry.getKey()).is(entry.getValue());
+                SimpleFilterQuery specFilterQuery = new SimpleFilterQuery(specCriteria);
+                query.addFilterQuery(specFilterQuery);
+            }
+        }
+
 
         //分页查询
         //ScoredPage<TbItem> scoredPage = solrTemplate.queryForPage(query, TbItem.class);
