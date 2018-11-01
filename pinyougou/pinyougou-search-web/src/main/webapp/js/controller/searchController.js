@@ -8,11 +8,11 @@ app.controller("searchController", function ($scope, searchService) {
     };
 
     //定义查询和过滤条件
-    $scope.searchMap = {"keywords":"", "brand":"", "category":"","spec":{}};
+    $scope.searchMap = {"keywords":"", "brand":"", "category":"","spec":{}, "price":""};
 
     //添加过滤条件
     $scope.addSearchItem = function (key, value) {
-        if("brand" == key || "category" == key){
+        if("brand" == key || "category" == key || "price" == key){
             $scope.searchMap[key] = value;
         } else {
             //规格的选项
@@ -25,7 +25,7 @@ app.controller("searchController", function ($scope, searchService) {
 
     //删除过滤条件值
     $scope.removeSearchItem = function (key) {
-        if("brand" == key || "category" == key){
+        if("brand" == key || "category" == key || "price" == key){
             $scope.searchMap[key] = "";
         } else {
             //规格的选项

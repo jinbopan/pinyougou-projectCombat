@@ -3,13 +3,13 @@ package com.pinyougou.search.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.query.result.HighlightEntry;
 import org.springframework.data.solr.core.query.result.HighlightPage;
 import org.springframework.data.solr.core.query.result.ScoredPage;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +46,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         query.setHighlightOptions(highlightOptions);
 
         //分类过滤条件查询
-        if(searchMap.get("category") != null && !"".equals(searchMap.get("category").toString())){
+        if(!StringUtils.isEmpty(searchMap.get("category"))){
             //创建过滤查询对象
             Criteria catCriteria = new Criteria("item_category").is(searchMap.get("category"));
 
@@ -55,7 +55,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //品牌过滤条件查询
-        if(searchMap.get("brand") != null && !"".equals(searchMap.get("brand").toString())){
+        if(!StringUtils.isEmpty(searchMap.get("brand"))){
             //创建过滤查询对象
             Criteria brandCriteria = new Criteria("item_brand").is(searchMap.get("brand"));
 
@@ -75,6 +75,25 @@ public class ItemSearchServiceImpl implements ItemSearchService {
                 SimpleFilterQuery specFilterQuery = new SimpleFilterQuery(specCriteria);
                 query.addFilterQuery(specFilterQuery);
             }
+        }
+
+        //价格过滤条件查询
+        if(!StringUtils.isEmpty(searchMap.get("price"))){
+            String[] prices = searchMap.get("price").toString().split("-");
+
+            //创建起始价格过滤查询对象
+            Criteria startCriteria = new Criteria("item_price").greaterThanEqual(prices[0]);
+            SimpleFilterQuery startFilterQuery = new SimpleFilterQuery(startCriteria);
+            query.addFilterQuery(startFilterQuery);
+
+            //创建结束价格过滤查询对象
+            if(!"*".equals(prices[1])) {
+                Criteria endCriteria = new Criteria("item_price").lessThanEqual(prices[1]);
+                SimpleFilterQuery endFilterQuery = new SimpleFilterQuery(endCriteria);
+                query.addFilterQuery(endFilterQuery);
+            }
+
+
         }
 
 
