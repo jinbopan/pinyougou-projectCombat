@@ -1,4 +1,4 @@
-app.controller("searchController", function ($scope, searchService) {
+app.controller("searchController", function ($scope,$location, searchService) {
 
     $scope.search = function () {
         searchService.search($scope.searchMap).success(function (response) {
@@ -123,5 +123,15 @@ app.controller("searchController", function ($scope, searchService) {
         $scope.searchMap.sort = sort;
 
         $scope.search();
+    };
+
+    //加载浏览器地址栏中的搜索关键字
+    $scope.loadKeywords = function () {
+        //获取浏览器地址栏中的搜索关键字
+        var keywords = $location.search()["keywords"];
+        $scope.searchMap.keywords = keywords;
+
+        $scope.search();
+
     };
 });
