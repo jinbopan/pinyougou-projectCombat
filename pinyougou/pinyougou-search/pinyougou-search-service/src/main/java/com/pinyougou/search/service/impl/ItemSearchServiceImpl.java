@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.query.result.HighlightEntry;
@@ -46,7 +47,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         query.setHighlightOptions(highlightOptions);
 
         //分类过滤条件查询
-        if(!StringUtils.isEmpty(searchMap.get("category"))){
+        if (!StringUtils.isEmpty(searchMap.get("category"))) {
             //创建过滤查询对象
             Criteria catCriteria = new Criteria("item_category").is(searchMap.get("category"));
 
@@ -55,7 +56,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //品牌过滤条件查询
-        if(!StringUtils.isEmpty(searchMap.get("brand"))){
+        if (!StringUtils.isEmpty(searchMap.get("brand"))) {
             //创建过滤查询对象
             Criteria brandCriteria = new Criteria("item_brand").is(searchMap.get("brand"));
 
@@ -64,7 +65,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //规格过滤条件查询
-        if(searchMap.get("spec") != null){
+        if (searchMap.get("spec") != null) {
 
             //逐个处理每个规格
             Map<String, String> specMap = (Map<String, String>) searchMap.get("spec");
@@ -78,7 +79,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //价格过滤条件查询
-        if(!StringUtils.isEmpty(searchMap.get("price"))){
+        if (!StringUtils.isEmpty(searchMap.get("price"))) {
             String[] prices = searchMap.get("price").toString().split("-");
 
             //创建起始价格过滤查询对象
@@ -87,7 +88,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             query.addFilterQuery(startFilterQuery);
 
             //创建结束价格过滤查询对象
-            if(!"*".equals(prices[1])) {
+            if (!"*".equals(prices[1])) {
                 Criteria endCriteria = new Criteria("item_price").lessThanEqual(prices[1]);
                 SimpleFilterQuery endFilterQuery = new SimpleFilterQuery(endCriteria);
                 query.addFilterQuery(endFilterQuery);
@@ -107,9 +108,21 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //起始索引号 = （当前页号-1）*页大小
-        query.setOffset((pageNo - 1)*pageSize);
+        query.setOffset((pageNo - 1) * pageSize);
         //页大小
         query.setRows(pageSize);
+
+        //设置排序
+        if (!StringUtils.isEmpty(searchMap.get("sortField")) && !StringUtils.isEmpty(searchMap.get("sort"))) {
+            //排序序列DESC/ASC
+            String sortOrder = searchMap.get("sort").toString();
+
+            //创建排序对象sort；参数1：排序的序列；参数2：排序的域名
+            Sort sort = new Sort("DESC".equals(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC,
+                    "item_" + searchMap.get("sortField"));
+
+            query.addSort(sort);
+        }
 
 
         //分页查询

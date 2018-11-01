@@ -11,7 +11,7 @@ app.controller("searchController", function ($scope, searchService) {
     };
 
     //定义查询和过滤条件
-    $scope.searchMap = {"keywords":"", "brand":"", "category":"","spec":{}, "price":"", "pageNo":1, "pageSize":20};
+    $scope.searchMap = {"keywords":"", "brand":"", "category":"","spec":{}, "price":"", "pageNo":1, "pageSize":20, "sortField":"", "sort":""};
 
     //添加过滤条件
     $scope.addSearchItem = function (key, value) {
@@ -115,5 +115,13 @@ app.controller("searchController", function ($scope, searchService) {
             $scope.search();
         }
 
+    };
+
+    //添加排序域和序列
+    $scope.addSortField = function (field, sort) {
+        $scope.searchMap.sortField = field;
+        $scope.searchMap.sort = sort;
+
+        $scope.search();
     };
 });
