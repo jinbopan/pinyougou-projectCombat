@@ -7,10 +7,7 @@ import org.junit.Test;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FreemarkerTest {
 
@@ -44,6 +41,10 @@ public class FreemarkerTest {
         goodsList.add(map2);
 
         dataModel.put("goodsList", goodsList);
+
+        dataModel.put("today", new Date());
+
+        dataModel.put("number", 123456789L);
 
         //4、输出；参数1：在模版中使用到的数据map；参数2：输出的媒介
         FileWriter fileWriter = new FileWriter("D:\\itcast\\test\\test.html");
