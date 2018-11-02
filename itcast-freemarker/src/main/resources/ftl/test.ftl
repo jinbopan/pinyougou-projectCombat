@@ -49,5 +49,25 @@ ${jsonObj.id}---${jsonObj.name}
 <br><hr><br>
 数值直接显示：${number}--->完整显示数值：${number?c}
 <br><hr><br>
+空值处理；在freemarker中是不可以直接显示空值或者null的。可以如下处理:<br>
+如果为空则可以使用!表示什么都不显示：${emp!}；如果空的时候需要显示对应的内容，则可以!"xx"；${emp!"emp的值为空"}<br>
+
+<br>
+??? 前面两个??表示变量是否存在，如果存在则返回true，否则false；第三个?表示函数的调用<br>
+
+<#assign bool2 = false/>
+${bool2???string}<br>
+
+<#if str??>
+    str存在
+<#else>
+    str不存在
+</#if>
+
+<br>
+<br>
+<br>
+<br>
+
 </body>
 </html>
