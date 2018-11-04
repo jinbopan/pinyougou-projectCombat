@@ -1,14 +1,20 @@
 package com.pinyougou.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.pojo.TbItem;
-import com.pinyougou.search.service.ItemSearchService;
 import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTextMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,8 +25,13 @@ public class GoodsController {
     @Reference
     private GoodsService goodsService;
 
-    @Reference
-    private ItemSearchService itemSearchService;
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
+    @Autowired
+    private ActiveMQQueue itemSolrQueue;
+    @Autowired
+    private ActiveMQQueue itemSolrDeleteQueue;
 
     @RequestMapping("/findAll")
     public List<TbGoods> findAll() {
@@ -71,7 +82,14 @@ public class GoodsController {
             goodsService.deleteGoodsByIds(ids);
 
             //同步删除搜索系统对应的商品数据
-            itemSearchService.deleteItemByGoodsIds(Arrays.asList(ids));
+            jmsTemplate.send(itemSolrDeleteQueue, new MessageCreator() {
+                @Override
+                public Message createMessage(Session session) throws JMSException {
+                    ObjectMessage objectMessage = session.createObjectMessage();
+                    objectMessage.setObject(ids);
+                    return objectMessage;
+                }
+            });
 
             return Result.ok("删除成功");
         } catch (Exception e) {
@@ -109,8 +127,17 @@ public class GoodsController {
                 //1、根据商品spu id数组查询这些spu对应的所有已启用（status=1）的sku商品列表
                 List<TbItem> itemList = goodsService.findItemListByGoodsIdsAndStatus(ids, "1");
 
-                //2、更新数据
-                itemSearchService.importItemList(itemList);
+                //2、发送消息到MQ；参数1：发送的模式，参数2：发送消息对象
+                jmsTemplate.send(itemSolrQueue, new MessageCreator() {
+                    @Override
+                    public Message createMessage(Session session) throws JMSException {
+                        TextMessage textMessage = session.createTextMessage();
+                        textMessage.setText(JSON.toJSONString(itemList));
+                        return textMessage;
+                    }
+
+                });
+
             }
 
             return Result.ok("更新商品状态成功");
