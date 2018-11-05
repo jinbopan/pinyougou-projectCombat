@@ -60,12 +60,21 @@ public class UserController {
     @PostMapping("/add")
     public Result add(@RequestBody TbUser user, String smsCode) {
         try {
-            //使用md5加密
-            user.setPassword(DigestUtils.md5Hex(user.getPassword()));
-            user.setCreated(new Date());
-            user.setUpdated(user.getCreated());
-            userService.add(user);
-            return Result.ok("注册成功");
+            if(PhoneFormatCheckUtils.isPhoneLegal(user.getPhone())) {
+                if (userService.checkSmsCode(user.getPhone(), smsCode)) {
+                    //使用md5加密
+                    user.setPassword(DigestUtils.md5Hex(user.getPassword()));
+                    user.setCreated(new Date());
+                    user.setUpdated(user.getCreated());
+                    userService.add(user);
+                    return Result.ok("注册成功");
+                } else {
+                    return Result.fail("手机验证码输入错误");
+                }
+            } else {
+                return Result.fail("手机号格式非法");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
