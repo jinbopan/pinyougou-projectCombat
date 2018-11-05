@@ -1,6 +1,7 @@
 package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.common.util.PhoneFormatCheckUtils;
 import com.pinyougou.pojo.TbUser;
 import com.pinyougou.user.service.UserService;
 import com.pinyougou.vo.PageResult;
@@ -17,6 +18,27 @@ public class UserController {
 
     @Reference
     private UserService userService;
+
+    /**
+     * 发送手机短信验证码
+     * @param phone 手机号
+     * @return 操作结果
+     */
+    @GetMapping("/sendSmsCode")
+    public Result sendSmsCode(String phone){
+        try {
+            if(PhoneFormatCheckUtils.isPhoneLegal(phone)) {
+                userService.sendSmsCode(phone);
+                return Result.ok("发送验证码成功");
+            } else {
+                return Result.fail("手机号格式非法");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.fail("发送验证码失败");
+    }
 
     @RequestMapping("/findAll")
     public List<TbUser> findAll() {

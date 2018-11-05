@@ -26,7 +26,7 @@ app.controller("userController", function ($scope, $controller, userService) {
         });
     };
 
-    $scope.entity = {};
+    $scope.entity = {"phone":""};
     $scope.sendSmsCode = function () {
         if($scope.entity.phone == null || $scope.entity.phone=="") {
             alert("请输入手机号");
