@@ -15,7 +15,8 @@ http://www.springframework.org/schema/security/spring-security.xsd">
     <http pattern="/js/**" security="none"/>
     <http pattern="/plugins/**" security="none"/>
     <http pattern="/register.html" security="none"/>
-    <http pattern="/user/*.do" security="none"/>
+    <http pattern="/user/add.do" security="none"/>
+    <http pattern="/user/sendSmsCode.do" security="none"/>
 
     <!-- entry-point-ref 入口点引用  -->
     <http use-expressions="false" entry-point-ref="casProcessingFilterEntryPoint">
