@@ -102,6 +102,16 @@ public class CartServiceImpl implements CartService {
         redisTemplate.boundHashOps(CART_LIST).put(username, cartList);
     }
 
+    @Override
+    public List<Cart> mergeCartList(List<Cart> cartList1, List<Cart> cartList2) {
+        for (Cart cart : cartList1) {
+            for (TbOrderItem orderItem : cart.getOrderItemList()) {
+                addItemToCartList(cartList2, orderItem.getItemId(), orderItem.getNum());
+            }
+        }
+        return cartList2;
+    }
+
     /**
      * 在订单商品列表中根据商品id查询订单商品
      * @param orderItemList 订单商品列表
