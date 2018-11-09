@@ -18,7 +18,8 @@ http://www.springframework.org/schema/security/spring-security.xsd">
 
     <!-- entry-point-ref 入口点引用  -->
     <http use-expressions="false" entry-point-ref="casProcessingFilterEntryPoint">
-        <!--允许可以匿名访问-->
+        <!--允许可以匿名访问；用户名为anonymousUser-->
+        <intercept-url pattern="/cart/*.do" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
         
         <intercept-url pattern="/**" access="ROLE_USER"/>
         
@@ -56,7 +57,7 @@ http://www.springframework.org/schema/security/spring-security.xsd">
     </authentication-manager>
     <!--  认证类  -->
     <beans:bean id="userDetailsService"
-                class="com.pinyougou.user.service.impl.UserDetailServiceImpl"/>
+                class="com.pinyougou.cart.service.impl.UserDetailServiceImpl"/>
     <!--  认证提供者  -->
     <beans:bean id="casAuthenticationProvider"
                 class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
