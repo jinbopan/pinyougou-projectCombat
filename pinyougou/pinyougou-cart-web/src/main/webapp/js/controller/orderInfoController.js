@@ -70,10 +70,10 @@ app.controller("orderInfoController", function ($scope,addressService, cartServi
             if(response.success){
                 if("1" == $scope.order.paymentType){
                     //如果是微信支付则跳转到支付页面
-                    locaction.href = "pay.html#?outTradeNo=" + response.message;
+                    location.href = "pay.html#?outTradeNo=" + response.message;
                 } else {
                     //如果是货到付款则跳转到支付成功页面
-                    locaction.href = "paysuccess.html";
+                    location.href = "paysuccess.html";
                 }
             } else {
                 alert(response.message);
