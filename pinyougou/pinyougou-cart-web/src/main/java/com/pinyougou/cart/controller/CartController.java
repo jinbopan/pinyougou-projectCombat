@@ -50,6 +50,12 @@ public class CartController {
     @GetMapping("/addItemToCartList")
     public Result addItemToCartList(Long itemId, Integer num){
         try {
+
+            //设置允许某个域名的跨域请求响应
+            response.setHeader("Access-Control-Allow-Origin", "http://item.pinyougou.com");
+            //设置允许接收客户端cookie和响应cookie
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+
             //1、获取当前购物车列表
             List<Cart> cartList = findCartList();
             //2、将购买商品sku 的购买数量更新到购物车列表并返回最新的购物车列表

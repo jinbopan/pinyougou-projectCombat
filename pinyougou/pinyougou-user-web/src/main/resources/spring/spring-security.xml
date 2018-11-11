@@ -55,7 +55,7 @@ http://www.springframework.org/schema/security/spring-security.xsd">
     </authentication-manager>
     <!--  认证类  -->
     <beans:bean id="userDetailsService"
-                class="com.pinyougou.cart.service.impl.UserDetailServiceImpl"/>
+                class="com.pinyougou.user.service.impl.UserDetailServiceImpl"/>
     <!--  认证提供者  -->
     <beans:bean id="casAuthenticationProvider"
                 class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
