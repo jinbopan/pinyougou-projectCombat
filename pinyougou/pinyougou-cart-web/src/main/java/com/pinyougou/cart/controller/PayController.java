@@ -50,6 +50,7 @@ public class PayController {
         Result result = Result.fail("支付失败");
         try {
             //3分钟内查询，每隔3秒
+            int count = 0;
             while(true){
                 //1、查询状态
                 Map<String, String> resultMap = weixinPayService.queryPayStatus(outTradeNo);
@@ -62,6 +63,12 @@ public class PayController {
                     orderService.updateOrderStatus(outTradeNo, resultMap.get("transaction_id"));
 
                     result = Result.ok("支付成功");
+                    break;
+                }
+                count++;
+                if (count > 60) {
+                    //重新生成新的二维码
+                    result = Result.fail("二维码超时");
                     break;
                 }
 

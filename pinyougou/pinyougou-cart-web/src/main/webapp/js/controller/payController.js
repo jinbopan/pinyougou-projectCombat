@@ -44,12 +44,23 @@ app.controller("payController", function ($scope, $location, cartService, paySer
                 //跳转到支付成功页面
                 location.href = "paysuccess.html#?money=" + $scope.totalFee;
             } else {
-                //如果支付失败则跳转到支付失败页面
-                location.href = "payfail.html";
+                if (response.message == "二维码超时") {
+                    alert(response.message);
+                    //重新生成二维码
+                    $scope.createNative();
+                } else {
+                    //如果支付失败则跳转到支付失败页面
+                    location.href = "payfail.html";
+                }
             }
 
         });
 
+    };
+
+    //支付成功后加载显示支付金额
+    $scope.getMoney = function () {
+        $scope.money = $location.search()["money"];
     };
 
 });
