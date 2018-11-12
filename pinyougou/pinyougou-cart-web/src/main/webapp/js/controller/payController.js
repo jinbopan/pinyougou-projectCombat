@@ -26,8 +26,26 @@ app.controller("payController", function ($scope, $location, cartService, paySer
                     value:response.code_url
                 });
 
+                //查询支付状态
+                queryPayStatus($scope.outTradeNo);
+
             } else {
                 alert("生成支付二维码失败");
+            }
+
+        });
+
+    };
+
+    //查询支付状态
+    queryPayStatus = function (outTradeNo) {
+        payService.queryPayStatus(outTradeNo).success(function (response) {
+            if(response.success){
+                //跳转到支付成功页面
+                location.href = "paysuccess.html#?money=" + $scope.totalFee;
+            } else {
+                //如果支付失败则跳转到支付失败页面
+                location.href = "payfail.html";
             }
 
         });

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.order.service.OrderService;
 import com.pinyougou.pay.service.WeixinPayService;
 import com.pinyougou.pojo.TbPayLog;
+import com.pinyougou.vo.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +38,40 @@ public class PayController {
         }
 
         return new HashMap<>();
+    }
+
+    /**
+     * 根据支付日志id（交易号）查询订单支付状态
+     * @param outTradeNo 支付日志id（交易号）
+     * @return 操作结果
+     */
+    @GetMapping("/queryPayStatus")
+    public Result queryPayStatus(String outTradeNo){
+        Result result = Result.fail("支付失败");
+        try {
+            //3分钟内查询，每隔3秒
+            while(true){
+                //1、查询状态
+                Map<String, String> resultMap = weixinPayService.queryPayStatus(outTradeNo);
+
+                if (resultMap == null) {
+                    break;
+                }
+                if("SUCCESS".equals(resultMap.get("trade_state"))){
+                    //2、支付成功则更新订单状态
+                    orderService.updateOrderStatus(outTradeNo, resultMap.get("transaction_id"));
+
+                    result = Result.ok("支付成功");
+                    break;
+                }
+
+                //如果没有支付则每隔3秒查询
+                Thread.sleep(3000);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

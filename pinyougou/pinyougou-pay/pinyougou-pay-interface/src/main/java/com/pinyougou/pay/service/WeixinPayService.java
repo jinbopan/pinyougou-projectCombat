@@ -10,4 +10,11 @@ public interface WeixinPayService {
      * @return 包含支付二维码地址的信息
      */
     Map<String, String> createNative(String outTradeNo, String totalFee);
+
+    /**
+     * 根据支付日志id（交易号）查询订单支付状态
+     * @param outTradeNo 支付日志id（交易号）
+     * @return 查询结果
+     */
+    Map<String, String> queryPayStatus(String outTradeNo);
 }
