@@ -83,4 +83,9 @@ public class SeckillGoodsServiceImpl extends BaseServiceImpl<TbSeckillGoods> imp
 
         return seckillGoodsList;
     }
+
+    @Override
+    public TbSeckillGoods findOneInRedisById(Long id) {
+        return (TbSeckillGoods) redisTemplate.boundHashOps(SECKILL_GOODS).get(id);
+    }
 }

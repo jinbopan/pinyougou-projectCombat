@@ -13,6 +13,8 @@ app.controller("seckillGoodsController", function ($scope, $location, $interval,
 
             //倒计时总秒数
             var allSeconds = Math.floor((new Date(response.endTime).getTime() - new Date().getTime()) / 1000);
+
+            //angularJS的定时服务对象；参数1：要执行的方法，参数2：执行的间隔
             var task = $interval(function () {
                 if (allSeconds > 0) {
                     allSeconds = allSeconds - 1;
