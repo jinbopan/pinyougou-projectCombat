@@ -28,4 +28,10 @@ public interface SeckillOrderService extends BaseService<TbSeckillOrder> {
      * @param transaction_id 微信订单号
      */
     void saveSeckillOrderInRedisToDb(String outTradeNo, String transaction_id);
+
+    /**
+     * 删除redis中秒杀订单
+     * @param outTradeNo 订单Id
+     */
+    void deleteSeckillOrderInRedis(String outTradeNo) throws InterruptedException;
 }

@@ -68,8 +68,21 @@ public class PayController {
                     break;
                 }
                 count++;
-                if (count > 2) {
-                    //重新生成新的二维码
+                if (count > 3) {
+                    //关闭订单
+                    Map<String, String> map = weixinPayService.closeOrder(outTradeNo);
+
+                    if (map != null && "ORDERPAID".equals(map.get("err_code"))) {
+                        //说明在关闭订单的过程中用户支付了订单则也一样要保存订单
+                        orderService.saveSeckillOrderInRedisToDb(outTradeNo, resultMap.get("transaction_id"));
+
+                        result = Result.ok("支付成功");
+                        break;
+                    }
+
+                    //如果微信那边订单被关闭了；则需要删除redis中的订单
+                    orderService.deleteSeckillOrderInRedis(outTradeNo);
+
                     result = Result.fail("支付超时");
                     break;
                 }
