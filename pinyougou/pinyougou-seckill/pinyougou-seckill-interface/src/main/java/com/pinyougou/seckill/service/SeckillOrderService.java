@@ -14,4 +14,18 @@ public interface SeckillOrderService extends BaseService<TbSeckillOrder> {
      * @return 操作结果
      */
     String submitOrder(String userId, Long seckillId) throws InterruptedException;
+
+    /**
+     * 根据秒杀订单id查询在redis中的秒杀订单
+     * @param outTradeNo 秒杀订单id
+     * @return 秒杀订单
+     */
+    TbSeckillOrder findSeckillOrderInRedisById(String outTradeNo);
+
+    /**
+     * 保存秒杀订单到数据库中
+     * @param outTradeNo 秒杀订单id
+     * @param transaction_id 微信订单号
+     */
+    void saveSeckillOrderInRedisToDb(String outTradeNo, String transaction_id);
 }

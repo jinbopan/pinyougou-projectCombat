@@ -102,4 +102,24 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
         //4、返回订单id
         return seckillOrderId;
     }
+
+    @Override
+    public TbSeckillOrder findSeckillOrderInRedisById(String outTradeNo) {
+        return (TbSeckillOrder) redisTemplate.boundHashOps(SECKILL_ORDERS).get(outTradeNo);
+    }
+
+    @Override
+    public void saveSeckillOrderInRedisToDb(String outTradeNo, String transaction_id) {
+        //1、获取秒杀订单
+        TbSeckillOrder seckillOrder = findSeckillOrderInRedisById(outTradeNo);
+        //2、更新秒杀订单的支付状态
+        seckillOrder.setStatus("1");
+        seckillOrder.setPayTime(new Date());
+        seckillOrder.setTransactionId(transaction_id);
+        //3、保存订单到数据库中
+        seckillOrderMapper.insertSelective(seckillOrder);
+
+        //4、删除redis中的秒杀订单
+        redisTemplate.boundHashOps(SECKILL_ORDERS).delete(outTradeNo);
+    }
 }

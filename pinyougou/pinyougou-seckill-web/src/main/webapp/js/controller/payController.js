@@ -8,7 +8,7 @@ app.controller("payController", function ($scope, $location, payService) {
 
             if("SUCCESS"==response.result_code) {//创建支付地址成功
                 //计算总金额
-                $scope.money = (response.totalFee / 100).toFixed(2);
+                $scope.money = (response.total_fee / 100).toFixed(2);
 
                 //生成支付地址的二维码
                 var qr = new QRious({
