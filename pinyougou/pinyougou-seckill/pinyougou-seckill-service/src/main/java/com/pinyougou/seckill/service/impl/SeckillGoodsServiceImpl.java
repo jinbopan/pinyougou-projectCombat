@@ -20,7 +20,7 @@ import java.util.List;
 public class SeckillGoodsServiceImpl extends BaseServiceImpl<TbSeckillGoods> implements SeckillGoodsService {
 
     //秒杀商品在redis中对应的key的名称
-    private static final String SECKILL_GOODS = "SCEKILL_GOODS";
+    private static final String SECKILL_GOODS = "SECKILL_GOODS";
     @Autowired
     private SeckillGoodsMapper seckillGoodsMapper;
 
