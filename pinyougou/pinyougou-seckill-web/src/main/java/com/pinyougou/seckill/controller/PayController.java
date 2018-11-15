@@ -68,7 +68,7 @@ public class PayController {
                     break;
                 }
                 count++;
-                if (count > 3) {
+                if (count > 20) {
                     //关闭订单
                     Map<String, String> map = weixinPayService.closeOrder(outTradeNo);
 
