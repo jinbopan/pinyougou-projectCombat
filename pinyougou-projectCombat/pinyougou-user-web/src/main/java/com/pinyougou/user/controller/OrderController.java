@@ -39,6 +39,10 @@ public class OrderController {
     */
     @RequestMapping("/findPage")
     public Map<String, Object> findPage(@RequestBody Map<String, Object> searchMap) {
+        /*//设置允许某个域名的跨域请求响应
+        response.setHeader("Access-Control-Allow-Origin", "http://cart.pinyougou.com");
+        //设置允许接收客户端cookie和响应cookie
+        response.setHeader("Access-Control-Allow-Credentials", "true");*/
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         searchMap.put("userId", userId);
         Map<String, Object> resultMap = orderService.findOrder(searchMap);
@@ -73,9 +77,9 @@ public class OrderController {
     }
 
     @GetMapping("/deleteMyOrder")
-    public Result delete(Long[] orderIds) {
+    public Result delete(Long[] orderItemIds) {
         try {
-            orderService.deleteByOrderIds(orderIds);
+            orderService.deleteByOrderIds(orderItemIds);
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +106,7 @@ public class OrderController {
     @RequestMapping("/orderDetail")
     public OrderVo orderDetail(Long orderItemId){
        /* //设置允许某个域名的跨域请求响应
-        response.setHeader("Access-Control-Allow-Origin", "http://user.pinyougou.com");
+        response.setHeader("Access-Control-Allow-Origin", "http://cart.pinyougou.com");
         //设置允许接收客户端cookie和响应cookie
         response.setHeader("Access-Control-Allow-Credentials", "true");*/
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();

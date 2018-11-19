@@ -1,4 +1,4 @@
-app.controller("orderDetailController", function ($scope, userService, $location,$interval) {
+app.controller("orderDetailController", function ($scope, userService, $location, $interval, cartService) {
 
     $scope.orderStatus = ["", "立即付款", "买家已付款", "待发货", "已发货", "交易成功", "交易关闭", "去评价"];
 
@@ -9,9 +9,21 @@ app.controller("orderDetailController", function ($scope, userService, $location
         return new Date($.ajax({async: false}).getResponseHeader("Date"));
     }
 
+    //查询购物车列表
+    $scope.findCartList = function () {
+        cartService.findCartList().success(function (response) {
+            $scope.cartList = response;
+
+            //计算总数量和总价
+            $scope.totalValue = cartService.sumTotalValue(response);
+        });
+
+    };
+
     $scope.orderDetail = function () {
+        $scope.findCartList();
         var orderItemId = $location.search()["orderItemId"];
-        $scope.totalNum = $location.search()["totalNum"];
+        //计算总数量和总价
         userService.orderDetail(orderItemId).success(function (response) {
             $scope.entity = response;
 
